@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Navbar from "./components/Navbar";
 import ScrollEffects from "./components/ScrollEffects";
 import DroneScroll from "./components/DroneScroll";
@@ -236,19 +235,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Drone visual */}
-            <div className="hero-visual animate-in" style={{ animationDelay:"0.25s" }}>
-                <div className="drone-glow" aria-hidden="true" />
-                <Image
-                  src="/drone-blueprint.png"
-                  alt="Technical blueprint illustration of a quadcopter drone."
-                  width={560}
-                  height={560}
-                  className="drone-image"
-                  priority
-                  sizes="(max-width:768px) 90vw, 50vw"
-                />
-            </div>
           </div>
         </div>
       </section>

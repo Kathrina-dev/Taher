@@ -1,213 +1,199 @@
-
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-function smoothStep(t: number) {
+/* ─── helpers ─────────────────────────────────────────────── */
+
+function ease(t: number): number {
   const p = Math.max(0, Math.min(1, t));
   return p * p * (3 - 2 * p);
 }
 
-function lerp(a: number, b: number, t: number) {
+function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
+/* ─── component ───────────────────────────────────────────── */
+
+/**
+ * DroneScroll — smooth hero-to-experience flight widget
+ *
+ * Design decisions that prevent every past glitch:
+ *  • Owns its own <Image> — NEVER touches or moves the hero img.
+ *  • Always position:fixed left:0 top:0.
+ *    Position expressed entirely through transform so only the
+ *    compositor layer is dirtied (no layout, no paint).
+ *  • Two CSS transition profiles:
+ *      – flight  → 0.65 s ease (smooth horizontal travel)
+ *      – tracking→ 0.12 s ease (responsive while attached to experience)
+ *    Switching between profiles never causes a jump because we
+ *    don't change position at the same frame we change the profile.
+ *  • Scroll-up just reverses every calculation — no special case needed.
+ */
 export default function DroneScroll() {
-  const droneRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const raf = useRef(0);
 
   useEffect(() => {
-    const wrapper = droneRef.current;
-    const anchor = document.getElementById("hero-drone-anchor");
-    const about = document.getElementById("about");
+    const element = ref.current;
+    if (!element) return;
+    const el = element;
 
-    const drone =
-      anchor?.querySelector<HTMLImageElement>("img");
-
-    if (!wrapper || !anchor || !drone || !about) {
-      console.warn(
-        "DroneScroll: Could not find the hero drone or #about section."
-      );
+    /* reduced-motion / narrow-viewport guard */
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.innerWidth < 900
+    ) {
+      el.style.display = "none";
       return;
     }
 
-    const mq = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    );
+    let isTracking = false;
 
-    // Keep the original image in the hero on mobile
-    // and when reduced motion is enabled.
-    if (mq.matches || window.innerWidth < 900) {
-      wrapper.style.display = "none";
-      return;
+    /* ── transition helpers ─────────────────────────── */
+    const FLIGHT_TRANSITION =
+      "transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94)," +
+      "opacity  0.45s ease";
+    const TRACK_TRANSITION =
+      "transform 0.12s ease," +
+      "opacity  0.35s ease";
+
+    function setTransition(track: boolean) {
+      if (track === isTracking) return;
+      isTracking = track;
+      el.style.transition = track ? TRACK_TRANSITION : FLIGHT_TRANSITION;
     }
 
-    // Preserve the original image's location and styling.
-    const originalParent = drone.parentNode;
-    const originalNextSibling = drone.nextSibling;
-    const originalStyle = drone.getAttribute("style");
-
-    // Move the EXISTING image. Do not create another one.
-    wrapper.appendChild(drone);
-
-    Object.assign(drone.style, {
-      width: "100%",
-      height: "auto",
-      display: "block",
-      filter: "drop-shadow(0 0 20px rgba(0,212,255,0.5))",
-    });
-
-    wrapper.style.transition = "none";
-    wrapper.style.opacity = "1";
-    wrapper.style.left = "78vw";
-    wrapper.style.top = "36vh";
-    wrapper.style.transform =
-      "translate(-50%, -50%) rotate(0deg) scale(1)";
-
-    let frameRequested = false;
-
+    /* ── core update ────────────────────────────────── */
     const update = () => {
-      frameRequested = false;
-
-      if (!droneRef.current) return;
-
       const scrollY = window.scrollY;
-      const viewportHeight = window.innerHeight;
+      const vh      = window.innerHeight;
+      const vw      = window.innerWidth;
 
-      // Start the flight shortly before About enters view.
-      const aboutTop = about.getBoundingClientRect().top + scrollY;
-      const aboutHeight = about.offsetHeight;
+      const homeEl      = document.getElementById("home");
+      const spaceEl     = document.querySelector<HTMLElement>(".timeline-drone-space");
 
-      const flightStart = Math.max(
-        0,
-        aboutTop - viewportHeight * 0.65
-      );
+      /* hero-bottom in document coords */
+      const homeBottom = homeEl
+        ? homeEl.getBoundingClientRect().bottom + scrollY
+        : vh;
 
-      // Reach the left side early in the About section.
-      const flightEnd =
-        aboutTop + Math.min(
-          viewportHeight * 0.35,
-          aboutHeight * 0.35
+      /* The widget begins on the left of the hero and flies toward the
+         experience column. Once it arrives, the column owns its vertical
+         movement, so the drone scrolls away with that section. */
+      const homeStart = Math.max(0, homeBottom - vh);
+      let x       = 18;   /* vw */
+      let y       = 42;   /* vh */
+      let rotate  = -4;
+      let scale   = 0.88;
+      const opacity = 1;
+
+      if (spaceEl) {
+        const rect         = spaceEl.getBoundingClientRect();
+        const experienceTop = rect.top + scrollY;
+        const experienceCenter = experienceTop + rect.height * 0.5;
+        const landingScroll = Math.max(homeStart, experienceCenter - vh * 0.5);
+        const flightDuration = Math.max(vh * 0.8, landingScroll - homeStart);
+        const flightProgress = ease(
+          Math.max(0, Math.min(1, (scrollY - homeStart) / flightDuration))
         );
+        const cx = Math.max(10, Math.min(90, (rect.left + rect.width * 0.5) / vw * 100));
 
-      // Keep the drone on the left until About is nearly over.
-      const hideStart =
-        aboutTop + aboutHeight * 0.82;
+        if (scrollY < landingScroll) {
+          setTransition(false);
+          x = lerp(18, cx, flightProgress);
+          y = lerp(42, 50, flightProgress);
+          scale = lerp(0.88, 1.2, flightProgress);
+          rotate = lerp(-4, 8, flightProgress);
+        } else {
+          /* The horizontal position is parked; the section's document
+             position drives y, making the drone scroll with experience. */
+          setTransition(true);
+          x = cx;
+          y = (rect.top + rect.height * 0.5) / vh * 100;
+          scale = 1.2;
+          rotate = 8;
+        }
+      } else {
+        /* no experience lane: keep the drone parked on the left */
+        setTransition(false);
+      }
 
-      const hideEnd =
-        aboutTop + aboutHeight;
-
-      const flightProgress =
-        flightEnd <= flightStart
-          ? 1
-          : smoothStep(
-              (scrollY - flightStart) /
-              (flightEnd - flightStart)
-            );
-
-      // Hero: right. About: left.
-      const x = lerp(78, 18, flightProgress);
-      const y = lerp(36, 48, flightProgress);
-      const rotate = lerp(0, -5, flightProgress);
-      const scale = lerp(1, 0.92, flightProgress);
-
-      // Hide only after the About section finishes.
-      const fadeProgress = smoothStep(
-        (scrollY - hideStart) /
-        Math.max(1, hideEnd - hideStart)
-      );
-
-      const opacity = 1 - fadeProgress;
-
-      wrapper.style.left = `${x}vw`;
-      wrapper.style.top = `${y}vh`;
-      wrapper.style.transform =
-        `translate(-50%, -50%) rotate(${rotate}deg) scale(${scale})`;
-      wrapper.style.opacity = String(opacity);
-      wrapper.style.visibility =
-        opacity <= 0.01 ? "hidden" : "visible";
-
-      wrapper.classList.toggle(
-        "drone-landed",
-        flightProgress >= 1
-      );
+      /* GPU-only update: only transform + opacity */
+      el.style.transform =
+        `translateX(${x}vw) translateY(${y}vh)` +
+        ` translate(-50%, -50%)` +
+        ` rotate(${rotate}deg) scale(${scale})`;
+      el.style.opacity = String(Math.max(0, Math.min(1, opacity)));
     };
 
+    /* ── listeners ──────────────────────────────────── */
     const onScroll = () => {
-      if (frameRequested) return;
-
-      frameRequested = true;
-      rafRef.current = requestAnimationFrame(update);
+      cancelAnimationFrame(raf.current);
+      raf.current = requestAnimationFrame(update);
     };
 
-    // Position it immediately, so it doesn't fly in from nowhere.
+    /* snap to initial position silently, then activate transitions */
+    el.style.transition = "none";
     update();
 
-    window.addEventListener("scroll", onScroll, {
-      passive: true,
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (ref.current) {
+          ref.current.style.transition = FLIGHT_TRANSITION;
+        }
+      });
     });
 
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize",  update);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", update);
-      cancelAnimationFrame(rafRef.current);
-
-      // Restore the same image to its original hero location.
-      if (originalParent?.isConnected) {
-        if (
-          originalNextSibling &&
-          originalNextSibling.parentNode === originalParent
-        ) {
-          originalParent.insertBefore(
-            drone,
-            originalNextSibling
-          );
-        } else {
-          originalParent.appendChild(drone);
-        }
-      }
-
-      if (originalStyle === null) {
-        drone.removeAttribute("style");
-      } else {
-        drone.setAttribute("style", originalStyle);
-      }
+      window.removeEventListener("resize",  update);
+      cancelAnimationFrame(raf.current);
     };
   }, []);
 
   return (
     <div
-      ref={droneRef}
+      ref={ref}
       id="drone-scroll"
       aria-hidden="true"
       className="drone-scroll-widget"
       style={{
-        position: "fixed",
+        /* always anchored to top-left; transform does ALL the positioning */
+        position:      "fixed",
+        left:          0,
+        top:           0,
         pointerEvents: "none",
-        zIndex: 20,
-        width: "clamp(200px, 24vw, 340px)",
-        opacity: 1,
-        visibility: "visible",
-        willChange: "transform, left, top, opacity",
-        top: "36vh",
-        left: "78vw",
-        transform: "translate(-50%, -50%)",
+        zIndex:        20,
+        width:         "clamp(280px, 42vw, 620px)",
+        opacity:       0,
+        willChange:    "transform, opacity",
+        /* initial transform matches the JS default (left side, 42 vh) */
+        transform:
+          "translateX(18vw) translateY(42vh) translate(-50%, -50%) scale(0.88)",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          inset: "-25%",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(ellipse at center, rgba(0,212,255,0.14) 0%, transparent 65%)",
-          animation: "pulse-glow 4s ease-in-out infinite",
-        }}
-      />
+      {/* ambient glow ring */}
+      <div className="drone-glow" aria-hidden="true" />
 
-      <div className="drone-trail" aria-hidden="true" />
+      {/* ── Drone image ── own copy, independent of hero ── */}
+      <Image
+        src="/drone-blueprint.png"
+        alt=""
+        width={300}
+        height={300}
+        className="drone-image"
+        style={{
+          width:   "100%",
+          height:  "auto",
+          display: "block",
+        }}
+        sizes="(max-width:1200px) 30vw, 420px"
+      />
     </div>
   );
 }

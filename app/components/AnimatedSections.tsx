@@ -20,52 +20,55 @@ import {
 } from "../page";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 50 },
   visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut", delay },
+    transition: { duration: 0.9, ease: "easeOut", delay },
   }),
 };
 
 const fadeLeft: Variants = {
-  hidden: { opacity: 0, x: -25 },
+  hidden: { opacity: 0, x: -40 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.9, ease: "easeOut" },
   },
 };
 
 const fadeRight: Variants = {
-  hidden: { opacity: 0, x: 25 },
+  hidden: { opacity: 0, x: 40 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.9, ease: "easeOut" },
   },
 };
 
 const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.96, y: 16 },
+  hidden: { opacity: 0, scale: 0.94, y: 24 },
   visible: (delay: number = 0) => ({
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut", delay },
+    transition: { duration: 0.75, ease: "easeOut", delay },
   }),
 };
 
 const stagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.13 } },
 };
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
+  // "0px 0px -150px 0px" = shrink root 150 px from the bottom.
+  // An element only triggers when its top is ≥150 px above the
+  // viewport bottom — i.e. it is clearly in view, not just peeking.
   const inView = useInView(ref, {
     once: true,
-    margin: "-60px 0px",
+    margin: "0px 0px -150px 0px",
   });
 
   return { ref, inView };
@@ -174,7 +177,7 @@ function ExperienceSection() {
               variants={stagger}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.08 }}
+              viewport={{ once: true, amount: 0.2 }}
             >
               <div className="timeline-rail" aria-hidden="true">
                 <div className="timeline-rail-track" />
@@ -416,11 +419,11 @@ function ContactSection() {
 
   const introInView = useInView(introRef, {
     once: true,
-    margin: "-60px 0px",
+    margin: "0px 0px -150px 0px",
   });
   const linksInView = useInView(linksRef, {
     once: true,
-    margin: "-60px 0px",
+    margin: "0px 0px -150px 0px",
   });
 
   return (
