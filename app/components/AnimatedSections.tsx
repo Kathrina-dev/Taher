@@ -1,200 +1,267 @@
+
 "use client";
 
 import Image from "next/image";
-import { motion, useInView, type Variants } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "framer-motion";
 import { useRef } from "react";
 import {
-  EDUCATION,
-  INTERESTS,
+  EXPERIENCE,
+  ACHIEVEMENTS,
   PROJECTS,
   SKILL_GROUPS,
   CONTACT_LINKS,
   ArrowIcon,
 } from "../page";
 
-/* ══════════════════════════════════════════════════════════════
-   Framer Motion variants
-   Using named easing strings ("easeOut") so TS is happy.
-   Delay is injected via the `custom` prop on each element.
-   ══════════════════════════════════════════════════════════════ */
-
 const fadeUp: Variants = {
-  hidden:  { opacity: 0, y: 36 },
+  hidden: { opacity: 0, y: 30 },
   visible: (delay: number = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.65, ease: "easeOut", delay },
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut", delay },
   }),
 };
 
 const fadeLeft: Variants = {
-  hidden:  { opacity: 0, x: -36 },
-  visible: (delay: number = 0) => ({
-    opacity: 1, x: 0,
-    transition: { duration: 0.65, ease: "easeOut", delay },
-  }),
+  hidden: { opacity: 0, x: -25 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 const fadeRight: Variants = {
-  hidden:  { opacity: 0, x: 36 },
-  visible: (delay: number = 0) => ({
-    opacity: 1, x: 0,
-    transition: { duration: 0.65, ease: "easeOut", delay },
-  }),
+  hidden: { opacity: 0, x: 25 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 const scaleIn: Variants = {
-  hidden:  { opacity: 0, scale: 0.93, y: 20 },
+  hidden: { opacity: 0, scale: 0.96, y: 16 },
   visible: (delay: number = 0) => ({
-    opacity: 1, scale: 1, y: 0,
-    transition: { duration: 0.55, ease: "easeOut", delay },
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut", delay },
   }),
 };
 
 const stagger: Variants = {
-  hidden:  {},
+  hidden: {},
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-/* ── Viewport reveal hook ───────────────────────────────────── */
 function useReveal() {
-  const ref    = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px 0px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, {
+    once: true,
+    margin: "-60px 0px",
+  });
+
   return { ref, inView };
 }
 
-/* ── Shared section header ──────────────────────────────────── */
 function SectionHeader({
-  number, label, title,
+  number,
+  label,
+  title,
 }: {
   number: string;
   label: string;
   title: React.ReactNode;
 }) {
   const { ref, inView } = useReveal();
+
   return (
     <motion.div
       ref={ref}
       className="section-header"
       variants={fadeUp}
-      custom={0}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
     >
-      <div className="section-number">{number} / {label}</div>
+      <div className="section-number">
+        {number} / {label}
+      </div>
       <h2 className="section-title">{title}</h2>
     </motion.div>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ABOUT
-   ══════════════════════════════════════════════════════════════ */
-function AboutSection() {
-  const bioRef    = useRef<HTMLDivElement>(null);
-  const eduRef    = useRef<HTMLDivElement>(null);
-  const bioInView = useInView(bioRef, { once: true, margin: "-60px 0px" });
-  const eduInView = useInView(eduRef, { once: true, margin: "-60px 0px" });
+/* ── Experience & achievements timeline ───────────────────── */
+
+function TimelineAccordion({
+  label,
+  title,
+  subtitle,
+  children,
+  index,
+}: {
+  label: string;
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+  index: number;
+}) {
+  return (
+    <motion.div
+      className="timeline-item"
+      variants={fadeRight}
+      custom={index * 0.08}
+    >
+      <span className="timeline-dot" aria-hidden="true" />
+
+      <details className="timeline-accordion">
+        <summary className="timeline-summary">
+          <span className="timeline-item-label annotation">{label}</span>
+          <span className="timeline-item-title">{title}</span>
+          <span className="timeline-item-subtitle">{subtitle}</span>
+          <span className="timeline-chevron" aria-hidden="true">
+            +
+          </span>
+        </summary>
+
+        <div className="timeline-details">{children}</div>
+      </details>
+    </motion.div>
+  );
+}
+
+
+function ExperienceSection() {
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 70%", "end 55%"],
+  });
+
+  const lineProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section id="about" className="section bp-border-top section-drone-left" aria-label="About section">
+    <section
+      id="experience"
+      className="section bp-border-top"
+      aria-label="Experience and achievements"
+    >
       <div className="container">
-        <SectionHeader number="01" label="Profile" title={<>About <span>Me</span></>} />
-        <div className="about-grid">
+        <div className="timeline-layout">
+          {/* LEFT COLUMN: heading and full-width timeline cards */}
+          <div className="timeline-left">
+            <SectionHeader
+              number="01"
+              label="Experience"
+              title={
+                <>
+                  Experience <span>&amp; Achievements</span>
+                </>
+              }
+            />
 
-          {/* Bio */}
-          <motion.div
-            ref={bioRef}
-            className="about-bio"
-            variants={fadeLeft}
-            custom={0.1}
-            initial="hidden"
-            animate={bioInView ? "visible" : "hidden"}
-          >
-            {/* TODO: Replace with student's own bio */}
-            <p style={{ marginBottom: "1.25rem" }}>
-              I am a final-year mechanical engineering student with a strong interest
-              in unmanned aerial systems and precision manufacturing. My work spans the
-              full product cycle — from concept sketches and CAD models to FEA
-              validation, prototyping, and flight testing.
-            </p>
-            <p style={{ marginBottom: "1.25rem" }}>
-              {/* TODO: Replace with personal statement */}
-              I believe that the best engineering comes from deep curiosity and a
-              willingness to iterate. Every failed prototype is a data point that
-              brings you closer to a system that works reliably.
-            </p>
-            <p>
-              {/* TODO: Adjust to match student's actual activities */}
-              Outside the lab, I enjoy contributing to open-source hardware projects
-              and competing in student design challenges.
-            </p>
-
-            {/* Interest tags */}
             <motion.div
-              className="interest-tags"
-              style={{ marginTop: "2rem" }}
+              ref={timelineRef}
+              className="timeline-content"
               variants={stagger}
               initial="hidden"
-              animate={bioInView ? "visible" : "hidden"}
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.08 }}
             >
-              {INTERESTS.map(tag => (
-                <motion.span key={tag} className="interest-tag" variants={fadeUp} custom={0}>
-                  {tag}
-                </motion.span>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Education */}
-          <motion.div
-            ref={eduRef}
-            className="about-education"
-            variants={fadeRight}
-            custom={0.15}
-            initial="hidden"
-            animate={eduInView ? "visible" : "hidden"}
-          >
-            <h3 className="about-sub-heading">
-              <span className="annotation" style={{ display: "block", marginBottom: "0.4rem" }}>— Education</span>
-            </h3>
-            <motion.div
-              className="education-list"
-              variants={stagger}
-              initial="hidden"
-              animate={eduInView ? "visible" : "hidden"}
-            >
-              {EDUCATION.map((e, i) => (
+              <div className="timeline-rail" aria-hidden="true">
+                <div className="timeline-rail-track" />
                 <motion.div
-                  key={e.degree}
-                  className="education-item bp-bracket"
-                  variants={fadeUp}
-                  custom={i * 0.1}
+                  className="timeline-rail-progress"
+                  style={{
+                    scaleY: lineProgress,
+                    transformOrigin: "top",
+                  }}
+                />
+              </div>
+
+              <div className="timeline-group-label annotation">
+                — PROFESSIONAL EXPERIENCE
+              </div>
+
+              {EXPERIENCE.map((item, index) => (
+                <TimelineAccordion
+                  key={item.role}
+                  index={index}
+                  label={item.period}
+                  title={item.role}
+                  subtitle={item.organization}
                 >
-                  <div className="edu-year annotation">{e.year}</div>
-                  <div className="edu-degree">{e.degree}</div>
-                  <div className="edu-institution">{e.institution}</div>
-                  <div className="annotation" style={{ marginTop: "0.25rem", opacity: 0.7 }}>{e.note}</div>
-                </motion.div>
+                  <p className="timeline-description">
+                    {item.description}
+                  </p>
+
+                  <ul className="timeline-bullets">
+                    {item.highlights.map((highlight) => (
+                      <li key={highlight}>{highlight}</li>
+                    ))}
+                  </ul>
+                </TimelineAccordion>
+              ))}
+
+              <div className="timeline-group-label annotation timeline-achievements-label">
+                — COMPETITIONS &amp; RECOGNITION
+              </div>
+
+              {ACHIEVEMENTS.map((achievement, index) => (
+                <TimelineAccordion
+                  key={achievement.event}
+                  index={EXPERIENCE.length + index}
+                  label={`ACHIEVEMENT 0${index + 1}`}
+                  title={achievement.title}
+                  subtitle={achievement.event}
+                >
+                  <p className="timeline-description">
+                    {achievement.detail}
+                  </p>
+                </TimelineAccordion>
               ))}
             </motion.div>
-          </motion.div>
+          </div>
 
+          {/* RIGHT COLUMN: reserved space for the drone */}
+          <div className="timeline-drone-space" aria-hidden="true" />
         </div>
       </div>
     </section>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PROJECTS
-   ══════════════════════════════════════════════════════════════ */
+
+/* ── Projects ─────────────────────────────────────────────── */
+
 function ProjectsSection() {
   const { ref, inView } = useReveal();
 
   return (
-    <section id="projects" className="section bp-border-top section-drone-right" aria-label="Projects section">
+    <section
+      id="projects"
+      className="section bp-border-top"
+      aria-label="Projects section"
+    >
       <div className="container">
-        <SectionHeader number="02" label="Portfolio" title={<>Featured <span>Projects</span></>} />
+        <SectionHeader
+          number="02"
+          label="Portfolio"
+          title={
+            <>
+              Featured <span>Projects</span>
+            </>
+          }
+        />
+
         <motion.div
           ref={ref}
           className="projects-grid"
@@ -202,8 +269,8 @@ function ProjectsSection() {
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
         >
-          {PROJECTS.map((proj, i) => (
-            <ProjectCard key={proj.id} proj={proj} index={i} />
+          {PROJECTS.map((proj, index) => (
+            <ProjectCard key={proj.id} proj={proj} index={index} />
           ))}
         </motion.div>
       </div>
@@ -215,7 +282,7 @@ function ProjectCard({
   proj,
   index,
 }: {
-  proj: typeof PROJECTS[number];
+  proj: (typeof PROJECTS)[number];
   index: number;
 }) {
   return (
@@ -242,35 +309,65 @@ function ProjectCard({
         />
         <div className="project-card-overlay" aria-hidden="true" />
         <div className="project-card-dwg drawing-no">{proj.dwg}</div>
-        <div className="project-card-category annotation">{proj.category}</div>
+        <div className="project-card-category annotation">
+          {proj.category}
+        </div>
       </div>
+
       <div className="project-card-body">
         <h3 className="project-card-title">{proj.title}</h3>
         <p className="project-card-desc">{proj.description}</p>
+
         <div className="project-challenge">
-          <span className="annotation" style={{ color: "var(--bp-cyan)", display: "block", marginBottom: "0.3rem" }}>
+          <span
+            className="annotation"
+            style={{
+              color: "var(--bp-cyan)",
+              display: "block",
+              marginBottom: "0.3rem",
+            }}
+          >
             Key Challenge
           </span>
-          <p style={{ fontSize: "0.83rem", fontStyle: "italic" }}>{proj.challenge}</p>
+          <p style={{ fontSize: "0.83rem", fontStyle: "italic" }}>
+            {proj.challenge}
+          </p>
         </div>
+
         <div className="project-tools">
-          {proj.tools.map(t => <span key={t} className="tool-tag">{t}</span>)}
+          {proj.tools.map((tool) => (
+            <span key={tool} className="tool-tag">
+              {tool}
+            </span>
+          ))}
         </div>
       </div>
     </motion.article>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SKILLS
-   ══════════════════════════════════════════════════════════════ */
+/* ── Skills: tags, not proficiency bars ────────────────────── */
+
 function SkillsSection() {
   const { ref, inView } = useReveal();
 
   return (
-    <section id="skills" className="section bp-border-top section-drone-left" aria-label="Skills section">
+    <section
+      id="skills"
+      className="section bp-border-top"
+      aria-label="Technical skills"
+    >
       <div className="container">
-        <SectionHeader number="03" label="Capabilities" title={<>Technical <span>Skills</span></>} />
+        <SectionHeader
+          number="03"
+          label="Capabilities"
+          title={
+            <>
+              Technical <span>Skills</span>
+            </>
+          }
+        />
+
         <motion.div
           ref={ref}
           className="skills-grid"
@@ -278,52 +375,29 @@ function SkillsSection() {
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
         >
-          {SKILL_GROUPS.map((group, gi) => (
+          {SKILL_GROUPS.map((group, index) => (
             <motion.div
               key={group.group}
               className="skill-group"
               variants={fadeUp}
-              custom={gi * 0.1}
+              custom={index * 0.1}
               whileHover={{
                 borderColor: "rgba(0,212,255,0.35)",
                 transition: { duration: 0.2 },
               }}
             >
               <div className="skill-group-header">
-                <span className="skill-group-icon" aria-hidden="true">{group.icon}</span>
+                <span className="skill-group-icon" aria-hidden="true">
+                  {group.icon}
+                </span>
                 <h3 className="skill-group-title">{group.group}</h3>
               </div>
-              <div className="skill-list">
-                {group.skills.map((sk, si) => (
-                  <div key={sk.name} className="skill-row">
-                    <div className="skill-meta">
-                      <span className="skill-name">{sk.name}</span>
-                      <span className="annotation">{sk.level}%</span>
-                    </div>
-                    <div
-                      className="skill-bar"
-                      role="progressbar"
-                      aria-valuenow={sk.level}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label={`${sk.name} proficiency ${sk.level}%`}
-                    >
-                      <motion.div
-                        className="skill-bar-fill-fm"
-                        initial={{ scaleX: 0 }}
-                        animate={inView ? { scaleX: 1 } : { scaleX: 0 }}
-                        transition={{
-                          duration: 0.9,
-                          ease: "easeOut",
-                          delay: gi * 0.1 + si * 0.07,
-                        }}
-                        style={{
-                          transformOrigin: "left",
-                          width: `${sk.level}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
+
+              <div className="skill-tags">
+                {group.skills.map((skill) => (
+                  <span key={skill} className="skill-tag">
+                    {skill}
+                  </span>
                 ))}
               </div>
             </motion.div>
@@ -334,46 +408,83 @@ function SkillsSection() {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CONTACT
-   ══════════════════════════════════════════════════════════════ */
+/* ── Contact ──────────────────────────────────────────────── */
+
 function ContactSection() {
-  const introRef    = useRef<HTMLDivElement>(null);
-  const linksRef    = useRef<HTMLDivElement>(null);
-  const introInView = useInView(introRef, { once: true, margin: "-60px 0px" });
-  const linksInView = useInView(linksRef, { once: true, margin: "-60px 0px" });
+  const introRef = useRef<HTMLDivElement>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
+
+  const introInView = useInView(introRef, {
+    once: true,
+    margin: "-60px 0px",
+  });
+  const linksInView = useInView(linksRef, {
+    once: true,
+    margin: "-60px 0px",
+  });
 
   return (
-    <section id="contact" className="section bp-border-top section-drone-right" aria-label="Contact section">
+    <section
+      id="contact"
+      className="section bp-border-top"
+      aria-label="Contact section"
+    >
       <div className="container">
-        <SectionHeader number="04" label="Reach Out" title={<>Get In <span>Touch</span></>} />
-        <div className="contact-layout">
+        <SectionHeader
+          number="04"
+          label="Reach Out"
+          title={
+            <>
+              Get In <span>Touch</span>
+            </>
+          }
+        />
 
-          {/* Intro */}
+        <div className="contact-layout">
           <motion.div
             ref={introRef}
             className="contact-intro"
             variants={fadeLeft}
-            custom={0.1}
             initial="hidden"
             animate={introInView ? "visible" : "hidden"}
           >
-            {/* TODO: Personalise the contact message */}
-            <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>
-              Open to internship opportunities, collaborative research projects, and
-              full-time positions. Feel free to reach out via any
-              of the channels below.
+            <p
+              style={{
+                fontSize: "1.1rem",
+                lineHeight: 1.8,
+                marginBottom: "1.5rem",
+              }}
+            >
+              I’m looking for Summer 2027 internship opportunities in
+              aerospace, UAV development, mechanical design, product
+              development, and simulation engineering. If you’re building
+              something challenging, I’d love to connect.
             </p>
-            <p className="annotation" style={{ opacity: 0.6 }}>Average response time: 24 hours</p>
+
             <div className="contact-box">
-              <div className="annotation" style={{ marginBottom: "0.5rem" }}>LOCATION</div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.9rem" }}>
+              <div
+                className="annotation"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                LOCATION
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.9rem",
+                }}
+              >
                 Bengaluru, India
+              </div>
+              <div
+                className="annotation"
+                style={{ marginTop: "0.75rem" }}
+              >
+                AVAILABLE MAY – JULY 2027
               </div>
             </div>
           </motion.div>
 
-          {/* Links */}
           <motion.div
             ref={linksRef}
             className="contact-links"
@@ -381,42 +492,54 @@ function ContactSection() {
             initial="hidden"
             animate={linksInView ? "visible" : "hidden"}
           >
-            {CONTACT_LINKS.map((link, i) => (
+            {CONTACT_LINKS.map((link, index) => (
               <motion.a
                 key={link.id}
                 id={link.id}
                 href={link.href}
                 className="contact-link-card"
                 variants={fadeRight}
-                custom={i * 0.08}
-                target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                custom={index * 0.08}
+                target={
+                  link.href.startsWith("http") ? "_blank" : undefined
+                }
+                rel={
+                  link.href.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 aria-label={`${link.label}: ${link.value}`}
-                whileHover={{ x: 6, transition: { duration: 0.2 } }}
+                whileHover={{
+                  x: 6,
+                  transition: { duration: 0.2 },
+                }}
               >
-                <span className="contact-link-icon" aria-hidden="true">{link.icon}</span>
+                <span className="contact-link-icon" aria-hidden="true">
+                  {link.icon}
+                </span>
                 <div>
-                  <div className="annotation" style={{ marginBottom: "0.2rem" }}>{link.label}</div>
+                  <div
+                    className="annotation"
+                    style={{ marginBottom: "0.2rem" }}
+                  >
+                    {link.label}
+                  </div>
                   <div className="contact-link-value">{link.value}</div>
                 </div>
                 <ArrowIcon />
               </motion.a>
             ))}
           </motion.div>
-
         </div>
       </div>
     </section>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ROOT EXPORT
-   ══════════════════════════════════════════════════════════════ */
 export default function AnimatedSections() {
   return (
     <>
-      <AboutSection />
+      <ExperienceSection />
       <ProjectsSection />
       <SkillsSection />
       <ContactSection />

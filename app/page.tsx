@@ -6,126 +6,181 @@ import AnimatedSections from "./components/AnimatedSections";
 
 export const EDUCATION = [
   {
-    degree: "B.Eng. Mechanical Engineering",
-    institution: "Vellore Institute of Technology",
     year: "2024 – 2028",
-    note: "",
+    degree: "B.Tech, Mechanical Engineering",
+    institution: "Vellore Institute of Technology (VIT), Vellore",
+    note: "CGPA: 8.56 / 10",
   },
   {
-    degree: "HSC — Pre-Engineering",
-    institution: "Federal Board of Intermediate Education", // TODO: Replace
-    year: "2019 – 2021",
-    note: "Distinction",
+    year: "2022 – 2024",
+    degree: "Pre-University — Physics, Chemistry & Mathematics",
+    institution: "Base PU College, Bengaluru",
+    note: "PCM",
   },
 ];
 
 export const INTERESTS = [
-  "UAV Airframe Design",
-  "Computational Fluid Dynamics",
-  "Advanced Manufacturing",
-  "Structural FEA",
-  "Robotics & Automation",
-  "Propulsion Systems",
+  "Aerospace & UAVs",
+  "Mechanical Design",
+  "SolidWorks CAD",
+  "ANSYS FEA",
+  "CFD Simulation",
+  "Composite Structures",
+  "Design for Manufacturing",
+  "Prototyping & Testing",
+  "Flight Testing",
 ];
 
 export const PROJECTS = [
   {
-    id:          "proj-uav-airframe",
-    dwg:         "DWG-2024-002",
-    title:       "Quadcopter Airframe — Q-450 X1",
-    category:    "UAV Design",
+    id: "aerothon-drone",
+    title: "Aerothon 2026 Competition Drone",
     description:
-      "Designed and fabricated a high-performance carbon-fibre quadcopter frame from scratch. Optimised arm geometry for torsional stiffness while minimising weight. Integrated motor mounts, flight-controller stack, and battery bay in a single tooled assembly.",
+      "Designed and developed a competition UAV frame from scratch, incorporating a novel landing-gear mechanism and iterating the structure against simulation results and manufacturing constraints.",
     challenge:
-      "Balancing structural rigidity against weight budget under a 500 g frame constraint with 4×M3 fastener pattern spacing.",
-    tools:       ["SolidWorks", "ANSYS FEA", "CNC Milling", "Carbon Fibre Layup"],
-    image:       "/project-uav-airframe.png",
-    imageAlt:    "Blueprint top-view of Q-450 X1 quadcopter airframe with dimension annotations",
+      "Balance structural stiffness, weight, landing performance, and manufacturability.",
+    tools: ["SolidWorks", "ANSYS", "FEA", "DFM", "UAV Design"],
+    category: "AEROSPACE / UAV",
+    dwg: "DWG-001",
+    image: "/images/aerothon-drone.jpg",
+    imageAlt: "Competition UAV frame designed for Aerothon 2026",
   },
   {
-    id:          "proj-cfd",
-    dwg:         "DWG-2024-003",
-    title:       "NACA 2412 Wing — CFD Analysis",
-    category:    "Aerodynamics",
+    id: "solar-cleaning-drone",
+    title: "Autonomous Solar-Panel Cleaning Drone",
     description:
-      "Conducted a full 2-D and 3-D CFD study on a NACA 2412 aerofoil at varying angles of attack. Generated pressure coefficient distributions and drag polars used to select the optimal cruise operating point for a fixed-wing UAV application.",
+      "Designed lightweight structural members and modular equipment mounts for a UAV platform intended to support solar-panel cleaning operations and interchangeable payloads.",
     challenge:
-      "Achieving mesh independence below 1% residual error at Re = 1.2M while maintaining manageable computational cost on a single workstation.",
-    tools:       ["ANSYS Fluent", "MATLAB", "Pointwise Meshing", "Python"],
-    image:       "/project-cfd-sim.png",
-    imageAlt:    "CFD streamline visualisation of NACA 2412 airfoil at 6° angle of attack",
+      "Develop a modular payload architecture without compromising airframe weight and usability.",
+    tools: ["SolidWorks", "Structural Design", "Modular Design", "Prototyping"],
+    category: "AUTONOMOUS SYSTEMS",
+    dwg: "DWG-002",
+    image: "/images/solar-cleaning-drone.jpg",
+    imageAlt: "Concept design of a solar-panel cleaning UAV",
   },
   {
-    id:          "proj-robotic-arm",
-    dwg:         "DWG-2024-004",
-    title:       "6-DOF Robotic Arm — Mechanical Design",
-    category:    "Robotics",
+    id: "modular-quadcopter",
+    title: "Multipurpose Modular Quadcopter",
     description:
-      "Designed the full mechanical assembly of a desktop 6-DOF robotic arm for a university automation lab. Includes harmonic-drive joints, integrated servo housings, and a quick-release parallel-jaw gripper. Kinematic workspace was verified in simulation before fabrication.",
+      "Designed and assembled a quadcopter frame with interchangeable payload sections, allowing the platform to be reconfigured for different applications without redesigning its core structure.",
     challenge:
-      "Minimising backlash across all six joints with off-the-shelf harmonic drive modules while maintaining a 750 mm maximum reach.",
-    tools:       ["CATIA V5", "MATLAB Robotics Toolbox", "3-D Printing", "Laser Cutting"],
-    image:       "/project-robotic-arm.png",
-    imageAlt:    "Blueprint isometric view of 6-DOF robotic arm assembly with joint callouts",
+      "Make payload changes practical while preserving a reusable central airframe.",
+    tools: ["CAD", "UAV Assembly", "Mechanical Design", "Prototyping"],
+    category: "MECHANICAL DESIGN",
+    dwg: "DWG-003",
+    image: "/images/modular-quadcopter.jpg",
+    imageAlt: "Modular quadcopter frame with interchangeable payload sections",
+  },
+  {
+    id: "esp32-pager",
+    title: "ESP32 Wi-Fi Pager Enclosure",
+    description:
+      "Designed a 3D-printable enclosure for an ESP32-based Wi-Fi pager with USB-C charging and a rotating-tube opening mechanism.",
+    challenge:
+      "Integrate electronics, charging access, and a functional mechanical opening mechanism in a compact enclosure.",
+    tools: ["CAD", "FDM 3D Printing", "Enclosure Design", "Prototyping"],
+    category: "PRODUCT DEVELOPMENT",
+    dwg: "DWG-004",
+    image: "/images/esp32-pager.jpg",
+    imageAlt: "3D-printed enclosure for an ESP32 Wi-Fi pager",
+  },
+];
+
+export const EXPERIENCE = [
+  {
+    role: "Head of CAD & Simulations",
+    organization: "Team Rotor FPV · VIT Vellore",
+    period: "Mar 2025 – Present",
+    description:
+      "Promoted from Senior Core to lead CAD and simulation work for a student UAV design-and-build team.",
+    highlights: [
+      "Designed CFRP drone frames and lightweight load-bearing components.",
+      "Performed static structural FEA, CFD, and free-free modal analysis using ANSYS and SpaceClaim.",
+      "Evaluated natural frequencies to identify safe operating RPM ranges and reduce resonance risk.",
+      "Created SolidWorks models, prepared BOMs, and supported component selection and procurement.",
+      "Documented design reviews, prototypes, and flight-test results.",
+      "Flight-tested self-designed airframes and completed 100+ hours on drone simulators, with hands-on LOS/FPV multirotor flying.",
+    ],
+  },
+];
+
+export const ACHIEVEMENTS = [
+  {
+    title: "1st Place",
+    event: "International Space Drone Challenge 2026",
+    detail: "Team Rotor FPV",
+  },
+  {
+    title: "Second Runner-Up",
+    event: "Sky Maneuver · Cognizance 2026, IIT Roorkee",
+    detail: "Team Rotor FPV",
+  },
+  {
+    title: "Special Achiever",
+    event: "VIT · Academic Year 2025–26",
+    detail: "Recognised for national/international-level achievement.",
   },
 ];
 
 export const SKILL_GROUPS = [
   {
-    group: "CAD & Design",
-    icon:  "✦",
+    group: "CAD & Mechanical Design",
+    icon: "⚙",
     skills: [
-      { name: "SolidWorks",  level: 92 },
-      { name: "CATIA V5",    level: 80 },
-      { name: "AutoCAD",     level: 88 },
-      { name: "Fusion 360",  level: 75 },
+      "SolidWorks",
+      "ANSYS SpaceClaim",
+      "Design for Manufacturing (DFM)",
+      "GD&T Fundamentals",
     ],
   },
   {
     group: "Simulation & Analysis",
-    icon:  "◈",
+    icon: "◈",
     skills: [
-      { name: "ANSYS Mechanical",       level: 85 },
-      { name: "ANSYS Fluent",           level: 78 },
-      { name: "MATLAB / Simulink",      level: 82 },
-      { name: "Python (NumPy / SciPy)", level: 70 },
+      "ANSYS Static Structural FEA",
+      "Free-Free Modal Analysis",
+      "Computational Fluid Dynamics (CFD)",
+      "Meshing Strategy",
+      "Solver Optimisation",
     ],
   },
   {
-    group: "Manufacturing",
-    icon:  "⬡",
+    group: "Manufacturing & Testing",
+    icon: "⬡",
     skills: [
-      { name: "CNC Milling & Turning",   level: 80 },
-      { name: "FDM / SLA 3-D Printing",  level: 90 },
-      { name: "Carbon Fibre Layup",      level: 75 },
-      { name: "Laser Cutting",           level: 88 },
+      "CFRP Composite Components",
+      "FDM 3D Printing",
+      "Prototyping & Assembly",
+      "UAV Flight Testing",
+      "LOS / FPV Multirotor Flying",
     ],
   },
   {
-    group: "Engineering Tools",
-    icon:  "⊕",
+    group: "Programming & Engineering",
+    icon: "⌘",
     skills: [
-      { name: "GD&T / Technical Drawing",  level: 85 },
-      { name: "FEA / Structural Analysis", level: 82 },
-      { name: "Git / Version Control",     level: 68 },
-      { name: "MS Office / LaTeX",         level: 90 },
+      "Python",
+      "MATLAB",
+      "BOM Preparation",
+      "Technical Documentation",
+      "Component Selection & Procurement",
     ],
   },
 ];
 
 export const CONTACT_LINKS = [
   {
-    id:    "contact-email",
+    id: "contact-email",
     label: "Email",
-    value: "taher.haidri@university.edu", // TODO: Replace
-    href:  "mailto:taher.haidri@university.edu",
-    icon:  "✉",
+    value: "taherhaidri76@gmail.com",
+    href: "mailto:taherhaidri76@gmail.com",
+    icon: "✉",
   },
   {
     id:    "contact-linkedin",
     label: "LinkedIn",
-    value: "linkedin.com/in/taherhaidri", // TODO: Replace
-    href:  "https://linkedin.com/in/taherhaidri",
+    value: "linkedin.com/in/taherhaidri",
+    href:  "https://www.linkedin.com/in/taher-haidri-18260b34b/?isSelfProfile=false",
     icon:  "◈",
   },
   {
@@ -144,10 +199,6 @@ export const CONTACT_LINKS = [
   },
 ];
 
-/* ══════════════════════════════════════════════════════════════
-   PAGE — Server component shell; animated content is in
-   AnimatedSections (client component with Framer Motion)
-   ══════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   return (
     <>
@@ -155,9 +206,6 @@ export default function HomePage() {
       <ScrollEffects />
       <DroneScroll />
 
-      {/* ══════════════════════
-          HERO (server-rendered)
-      ══════════════════════ */}
       <section id="home" className="hero" aria-label="Hero — Introduction">
         <div className="container">
           <div className="hero-grid">
@@ -173,11 +221,10 @@ export default function HomePage() {
               <p className="hero-title animate-in cursor-blink" style={{ animationDelay:"0.3s" }}>
                 B.Eng. Mechanical Engineering — Class of 2028
               </p>
-              <p className="hero-description animate-in" style={{ animationDelay:"0.4s" }}>
-                {/* TODO: Replace with student's own introduction */}
-                Designing systems where precision meets innovation. Focused on UAV airframe
-                development, computational fluid dynamics, and advanced manufacturing.
-                Building machines that push the boundary between the drawing board and the sky.
+              <p className="hero-description animate-in" style={{ animationDelay: "0.4s" }}>
+                Designing lightweight UAV structures, validating engineering
+                decisions through simulation, and turning CAD concepts into
+                flight-tested hardware.
               </p>
               <div className="hero-cta-group animate-in" style={{ animationDelay:"0.5s" }}>
                 <a href="#projects" id="hero-cta-projects" className="btn-primary">
@@ -194,7 +241,7 @@ export default function HomePage() {
                 <div className="drone-glow" aria-hidden="true" />
                 <Image
                   src="/drone-blueprint.png"
-                  alt="Technical blueprint illustration of a quadcopter drone — carbon fibre propellers, brushless motors, LiPo battery, and flight controller labelled."
+                  alt="Technical blueprint illustration of a quadcopter drone."
                   width={560}
                   height={560}
                   className="drone-image"
@@ -206,25 +253,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════
-          All sections below use Framer Motion (client component)
-      ══════════════════════ */}
       <AnimatedSections />
-
-      {/* Landing zone — car parked at the bottom, drone flies in here */}
-      <div className="landing-zone" aria-hidden="true">
-        <div className="landing-zone-inner">
-          <div className="drone-glow" aria-hidden="true" />
-          <Image
-            src="/car-blueprint.png"
-            alt=""
-            width={960}
-            height={540}
-            style={{ width:"100%", height:"auto", filter:"drop-shadow(0 0 18px rgba(0,212,255,0.35))", opacity:0.7, display:"block" }}
-            loading="lazy"
-          />
-        </div>
-      </div>
 
       <footer role="contentinfo" className="site-footer">
         <div className="container">
@@ -239,7 +268,6 @@ export default function HomePage() {
   );
 }
 
-/* ── Shared small SVG components ─────────────────────────── */
 export function ArrowIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
