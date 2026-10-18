@@ -1160,11 +1160,11 @@ a:hover {
   }
 
   33% {
-    transform: translateY(-9px) rotate(0.7deg);
+    transform: translateY(-22px) rotate(0.7deg);
   }
 
   66% {
-    transform: translateY(-4px) rotate(-0.4deg);
+    transform: translateY(-10px) rotate(-0.4deg);
   }
 }
 
