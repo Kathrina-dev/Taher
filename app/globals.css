@@ -339,6 +339,10 @@ a:hover {
   justify-content: center;
 }
 
+.mobile-drone {
+  display: none;
+}
+
 .hero-eyebrow {
   display: flex;
   align-items: center;
@@ -1192,6 +1196,40 @@ a:hover {
 @media (max-width: 900px) {
   :root {
     --section-gap: 5.5rem;
+  }
+
+  #drone-scroll {
+    display: none !important;
+  }
+
+  .mobile-drone {
+    display: flex;
+    width: min(88vw, 520px);
+    margin: 0 auto 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-drone img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 22px rgba(0, 212, 255, 0.24));
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .hero-content {
+    width: 100%;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .hero-eyebrow {
+    justify-content: flex-start;
+  }
+
+  .hero-cta-group {
+    justify-content: flex-start;
   }
 
   .hero-grid {

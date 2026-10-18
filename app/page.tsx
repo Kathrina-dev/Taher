@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Navbar from "./components/Navbar";
 import ScrollEffects from "./components/ScrollEffects";
 import DroneScroll from "./components/DroneScroll";
@@ -208,6 +209,17 @@ export default function HomePage() {
       <section id="home" className="hero" aria-label="Hero — Introduction">
         <div className="container">
           <div className="hero-grid">
+            <div className="mobile-drone" aria-hidden="true">
+              <Image
+                src="/drone-blueprint.png"
+                alt=""
+                width={560}
+                height={560}
+                priority
+                sizes="(max-width: 900px) 88vw, 0px"
+              />
+            </div>
+
             {/* Text */}
             <div className="hero-content">
               <div className="hero-eyebrow animate-in" style={{ animationDelay:"0.1s" }}>
