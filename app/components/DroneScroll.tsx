@@ -83,10 +83,10 @@ export default function DroneScroll() {
          experience column. Once it arrives, the column owns its vertical
          movement, so the drone scrolls away with that section. */
       const homeStart = Math.max(0, homeBottom - vh);
-      let x       = 18;   /* vw */
-      let y       = 42;   /* vh */
-      let rotate  = -4;
-      let scale   = 0.88;
+      let x       = 28;   /* vw */
+      let y       = 50;   /* vh */
+      let rotate  = -6;
+      let scale   = 1.2;
       const opacity = 1;
 
       if (spaceEl) {
@@ -102,18 +102,18 @@ export default function DroneScroll() {
 
         if (scrollY < landingScroll) {
           setTransition(false);
-          x = lerp(18, cx, flightProgress);
-          y = lerp(42, 50, flightProgress);
-          scale = lerp(0.88, 1.2, flightProgress);
-          rotate = lerp(-4, 8, flightProgress);
+          x = lerp(28, cx, flightProgress);
+          y = lerp(50, 50, flightProgress);
+          scale = lerp(1.2, 0.9, flightProgress);
+          rotate = lerp(-6, 2, flightProgress);
         } else {
           /* The horizontal position is parked; the section's document
              position drives y, making the drone scroll with experience. */
           setTransition(true);
           x = cx;
           y = (rect.top + rect.height * 0.5) / vh * 100;
-          scale = 1.2;
-          rotate = 8;
+          scale = 0.9;
+          rotate = 2;
         }
       } else {
         /* no experience lane: keep the drone parked on the left */
@@ -172,9 +172,9 @@ export default function DroneScroll() {
         width:         "clamp(280px, 42vw, 620px)",
         opacity:       0,
         willChange:    "transform, opacity",
-        /* initial transform matches the JS default (left side, 42 vh) */
+        /* initial transform matches the JS default (left side, -62 vh) */
         transform:
-          "translateX(18vw) translateY(42vh) translate(-50%, -50%) scale(0.88)",
+          "translateX(24vw) translateY(-62vh) translate(-50%, -50%) scale(0.88)",
       }}
     >
       {/* ambient glow ring */}
